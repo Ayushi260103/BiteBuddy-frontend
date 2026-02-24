@@ -7,21 +7,24 @@ import { useSelector } from 'react-redux';
 
 function useGetShopByCity() {
     const dispatch = useDispatch();
-    const {currentCity} = useSelector((state) => state.user);
+    const { currentCity, userData } = useSelector((state) => state.user);
   useEffect(() => {
-    
+    if (!userData || !currentCity?.trim()) {
+      return;
+    }
+
     const fetchShopByCity = async () => {
-    try{
-            const result= await axios.get(`${serverUrl}/api/shop/get-by-city/${currentCity}`, {withCredentials: true});
+    try {
+            const result = await axios.get(`${serverUrl}/api/shop/get-by-city/${encodeURIComponent(currentCity.trim())}`, {withCredentials: true});
             dispatch(setShopsInMyCity(result.data));
             console.log("shop by city data", result.data);
         }
-        catch(err){
+        catch(err) {
             console.error(err);
         }
     }
     fetchShopByCity();
-  }, [currentCity]);
+  }, [currentCity, userData, dispatch]);
 }
 
 export default useGetShopByCity
