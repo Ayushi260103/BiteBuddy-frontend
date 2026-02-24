@@ -2,6 +2,7 @@ import React, { useEffect } from 'react'
 import { IoIosArrowRoundBack } from 'react-icons/io';
 import { IoLocationSharp, IoSearchOutline } from 'react-icons/io5';
 import { TbCurrentLocation } from 'react-icons/tb';
+import L from "leaflet";
 import { MapContainer } from 'react-leaflet';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
@@ -18,6 +19,15 @@ import { FaCreditCard } from 'react-icons/fa';
 import { MdDeliveryDining } from 'react-icons/md';
 import { serverUrl } from '../App';
 import { addNewOrderToMyOrders } from '../redux/userSlice';
+import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
+import markerIcon from "leaflet/dist/images/marker-icon.png";
+import markerShadow from "leaflet/dist/images/marker-shadow.png";
+
+L.Icon.Default.mergeOptions({
+    iconRetinaUrl: markerIcon2x,
+    iconUrl: markerIcon,
+    shadowUrl: markerShadow
+});
 
 
 
