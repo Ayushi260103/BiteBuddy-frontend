@@ -12,7 +12,7 @@ import useGetMyShop from './hooks/useGetMyShop';
 import CreateEditShop from './pages/CreateEditShop';
 import AddItem from './pages/AddItem';
 import EditItem from './pages/EditItem';
-import useGetShopByCity from './hooks/UseGetShopByCity'
+import useGetShopByCity from './hooks/useGetShopByCity'
 import useGetItemByCity from './hooks/useGetItemByCity'
 import CartPage from './pages/CartPage';
 import CheckOut from './pages/CheckOut';
