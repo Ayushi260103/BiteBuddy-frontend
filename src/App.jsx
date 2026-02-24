@@ -29,7 +29,7 @@ import { setSocket } from './redux/userSlice'
 
 //backend url
 // export const serverUrl = "http://localhost:8000";        
-export const serverUrl = "https://bite-buddy-backend-azure.vercel.app";    
+export const serverUrl = "https://bitebuddy-backend-mzhh.onrender.com";    
 
 function App() {
   useGetCurrentUser(); // Call the hook to fetch current user data
