@@ -25,7 +25,7 @@ function DeliveryBoyDashboard() {
   const [deliveryBoyLocation, setDeliveryBoyLocation] = useState(null);
 
   useEffect(() => {
-    if (!socket || userData.role != 'deliveryBoy') return;
+    if (!socket || userData?.role != 'deliveryBoy') return;
 
     let watchId;
     if (navigator.geolocation) {
@@ -42,13 +42,11 @@ function DeliveryBoyDashboard() {
           longitude,
           userId: userData._id
         })
-      }),
-        (error) => {
-          console.log(error);
-        },
-      {
+      }, (error) => {
+        console.log(error);
+      }, {
         enableHighAccuracy: true          //watch position will now use gps to get our location for high accuracy
-      }
+      });
     }
     return () => {
       if (watchId) navigator.geolocation.clearWatch(watchId);
@@ -81,6 +79,7 @@ function DeliveryBoyDashboard() {
     try {
       const result = await axios.get(`${serverUrl}/api/order/accept-order/${assignmentId}`, { withCredentials: true });
       console.log(result.data);
+      setAvailableAssignments(prev => prev.filter(a => a.assignmentId !== assignmentId));
       await getCurrentOrder();
     }
     catch (err) {
@@ -139,16 +138,21 @@ function DeliveryBoyDashboard() {
 
 
   useEffect(() => {
+    if (!socket || userData?.role !== 'deliveryBoy') return;
+
     socket.on('newAssignment', (data) => {
       //send to correct delivery boy
       if (data.sentTo == userData._id) {
-        setAvailableAssignments(prev => [...prev, data]);
+        setAvailableAssignments(prev => {
+          const exists = prev.some(a => a.assignmentId === data.assignmentId);
+          return exists ? prev : [...prev, data];
+        });
       }
     });
     return () => {
       socket.off('newAssignment');
     }
-  }, [socket]);
+  }, [socket, userData?._id, userData?.role]);
 
   useEffect(() => {
     getAssignment();

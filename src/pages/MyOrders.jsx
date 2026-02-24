@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import UserOrderCard from '../components/UserOrderCard';
 import OwnerOrderCard from '../components/OwnerOrderCard';
 import { useEffect } from 'react';
-import { setMyOrders, updateRealTimeOrderStatus } from '../redux/userSlice';
+import { setMyOrders, updateRealTimeOrderStatus, updateAssignedDeliveryBoy } from '../redux/userSlice';
 
 function MyOrders() {
     const dispatch = useDispatch();
@@ -20,7 +20,7 @@ function MyOrders() {
         socket?.on('newOrder', (data) => {
             console.log("SOCKET DATA:", data);
 
-            const ownerId = data?.shopOrders.owner._id;
+            const ownerId = data?.shopOrders?.owner?._id || data?.shopOrders?.owner;
 
             if (ownerId == userData._id) {
                 dispatch(setMyOrders([data, ...myOrders]));
@@ -32,12 +32,16 @@ function MyOrders() {
                 dispatch(updateRealTimeOrderStatus({ orderId, shopId, status }));
             }
         });
+        socket?.on('assignmentAccepted', ({ orderId, shopId, assignedDeliveryBoy }) => {
+            dispatch(updateAssignedDeliveryBoy({ orderId, shopId, assignedDeliveryBoy }));
+        });
 
 
         //turn off newOrder event when use effect returns
         return () => {
             socket?.off('newOrder');
             socket?.off('updateStatus');
+            socket?.off('assignmentAccepted');
         }
     },[socket, userData?._id, myOrders]);
 

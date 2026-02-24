@@ -100,6 +100,24 @@ const userSlice = createSlice({
                 }
             }
         },
+        updateAssignedDeliveryBoy: (state, action) => {
+            const { orderId, shopId, assignedDeliveryBoy } = action.payload;
+            const order = state.myOrders.find(o => o._id == orderId);
+            if (!order) return;
+
+            const ownerShopOrder = order.shopOrders;
+            if (ownerShopOrder && !Array.isArray(ownerShopOrder) && ownerShopOrder.shop?._id == shopId) {
+                ownerShopOrder.assignedDeliveryBoy = assignedDeliveryBoy;
+                return;
+            }
+
+            if (Array.isArray(order.shopOrders)) {
+                const userShopOrder = order.shopOrders.find(so => so.shop?._id == shopId);
+                if (userShopOrder) {
+                    userShopOrder.assignedDeliveryBoy = assignedDeliveryBoy;
+                }
+            }
+        },
         setSearchItems: (state, action) => {
             state.searchItems = action.payload;
         },
@@ -116,7 +134,7 @@ export const { setUserData, setCurrentCity, setLoading,
     setCurrentState, setCurrentAddress, setShopsInMyCity,
     setItemsInMyCity, addToCart, updateQuantity, removeCartItem,
     setMyOrders, addNewOrderToMyOrders, updateOrderStatus, setSearchItems,
-    setSocket, updateRealTimeOrderStatus
+    setSocket, updateRealTimeOrderStatus, updateAssignedDeliveryBoy
 } = userSlice.actions;
 
 export default userSlice.reducer;
