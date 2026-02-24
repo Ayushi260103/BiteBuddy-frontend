@@ -41,6 +41,7 @@ function SignIn() {
             setLoading(false);
             console.log("Signin successful", result.data);
         } catch (error) {
+            setLoading(false);
             setError(error.response?.data?.message || "Error signing in");
             console.log("Error signing in", error.response?.data);
 
