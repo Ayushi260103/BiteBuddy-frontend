@@ -51,7 +51,7 @@ function CreateEditShop() {
             navigate("/"); // Navigate back to home page after successful shop creation or editing
         } catch (err) {
             setLoading(false);
-            console.error(err);
+            console.error(err.response?.data);
         }
     }
     return (

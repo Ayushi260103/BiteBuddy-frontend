@@ -62,7 +62,7 @@ function EditItem() {
             navigate("/");
         } catch (err) {
             setLoading(false);
-            console.error("Error editing item", err);
+            console.error("Error editing item", err.response?.data);
         }
     }
 

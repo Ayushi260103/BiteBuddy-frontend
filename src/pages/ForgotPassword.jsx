@@ -30,7 +30,7 @@ function ForgotPassword() {
             setLoading(false);
         } catch (error) {
             setError(error.response?.data?.message || "Error sending OTP");
-            console.error("Error sending OTP:", error);
+            console.error("Error sending OTP:", error.response?.data);
         }
     }
 
@@ -44,7 +44,7 @@ function ForgotPassword() {
             setLoading(false);
         } catch (error) {
             setError(error.response?.data?.message || "Error verifying OTP");
-            console.error("Error verifying OTP:", error);
+            console.error("Error verifying OTP:", error.response?.data);
         }
     }
 
@@ -64,7 +64,7 @@ function ForgotPassword() {
             setLoading(false);
         } catch (error) {
             setError(error.response?.data?.message || "Error resetting password");
-            console.error("Error resetting password:", error);
+            console.error("Error resetting password:", error.response?.data);
         }
     }
     return (

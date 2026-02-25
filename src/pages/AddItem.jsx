@@ -60,7 +60,7 @@ function AddItem() {
             navigate("/");
         } catch (err) {
             setLoading(false);
-            console.error(err);
+            console.error(err.response?.data);
         }
     }
     return (
