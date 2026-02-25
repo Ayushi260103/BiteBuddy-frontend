@@ -6,12 +6,13 @@ import UserOrderCard from '../components/UserOrderCard';
 import OwnerOrderCard from '../components/OwnerOrderCard';
 import { useEffect } from 'react';
 import { setMyOrders, updateRealTimeOrderStatus, updateAssignedDeliveryBoy } from '../redux/userSlice';
+import { OrderSkeleton } from '../components/SkeletonCard';
 
 function MyOrders() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const { userData, myOrders, socket } = useSelector(state => state.user);
-    
+
     // const Myorders = Array.isArray(myOrders) ? myOrders : [];
 
     useEffect(() => {
@@ -43,34 +44,52 @@ function MyOrders() {
             socket?.off('updateStatus');
             socket?.off('assignmentAccepted');
         }
-    },[socket, userData?._id, myOrders]);
+    }, [socket, userData?._id, myOrders]);
 
     return (
-        <div className='w-full min-h-screen bg-[#fff9f6] flex justify-center px-4'>
-            <div className='w-full max-w-[800px] p-4'>
-                <div className='flex items-center gap-[20px] mb-6'>
-                    <div className='z-[10] cursor-pointer'
-                        onClick={() => navigate("/")} >
-                        <IoIosArrowRoundBack size={35} className='text-[#ff4d2d]' />
+        <div className="w-full min-h-screen bg-[#fff9f6] flex justify-center px-4 py-6">
+            <div className="w-full max-w-[900px]">
+
+                {/* Header */}
+                <div className="flex items-center gap-4 mb-8">
+                    <div
+                        className="cursor-pointer p-2 rounded-full hover:bg-[#ff4d2d]/10 transition"
+                        onClick={() => navigate("/")}
+                    >
+                        <IoIosArrowRoundBack size={36} className="text-[#ff4d2d]" />
                     </div>
-                    <h1 className='text-2xl font-bold text-start' >My Orders</h1>
+                    <h1 className="text-2xl md:text-3xl font-extrabold text-gray-800">
+                        My Orders
+                    </h1>
                 </div>
-                <div className='space-y-6'>
-                    {myOrders.map((order, idx) => (
-                        userData?.role == 'user' ? (
+
+                {/* Orders */}
+                <div className="space-y-8">
+                    {!myOrders && (
+                        <>
+                            <OrderSkeleton />
+                            <OrderSkeleton />
+                            <OrderSkeleton />
+                        </>
+                    )}
+                    {myOrders.map((order, idx) =>
+                        userData?.role === "user" ? (
                             <UserOrderCard data={order} key={idx} />
-                        ) :
-                            userData?.role == 'owner' ? (
-                                <OwnerOrderCard data={order} key={idx} />
-                            ) :
-                                null
-                    ))}
+                        ) : userData?.role === "owner" ? (
+                            <OwnerOrderCard data={order} key={idx} />
+                        ) : null
+                    )}
+
                     {myOrders.length === 0 && (
-                        <p className='text-gray-500'>No orders found.</p>
+                        <div className="text-center py-16 bg-white rounded-2xl shadow">
+                            <p className="text-gray-500 text-lg">No orders found</p>
+                        </div>
                     )}
                 </div>
+
             </div>
         </div>
+
     )
 }
 

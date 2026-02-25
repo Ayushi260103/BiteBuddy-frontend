@@ -23,6 +23,7 @@ import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
 import markerIcon from "leaflet/dist/images/marker-icon.png";
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
 
+delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
     iconRetinaUrl: markerIcon2x,
     iconUrl: markerIcon,
@@ -155,131 +156,171 @@ function CheckOut() {
     }
 
     return (
-        <div className='min-h-screen bg-[#fff9f6] flex items-center justify-center p-6'>
-            <div className='z-[10] cursor-pointer absolute top-[20px] left-[20px]'
-                onClick={() => navigate("/")} >
-                <IoIosArrowRoundBack size={35} className='text-[#ff4d2d]' />
-            </div>
-            <div className='w-full max-w-[900px] bg-white rounded-2xl shadow-xl p-6 space-y-6'>
-                <h1 className='text-2xl font-bold text-gray-800'>
-                    Checkout
-                </h1>
-                {/* Location Section */}
-                <section>
-                    <h2 className='text-lg font-semibold mb-2 flex items-center gap-2 text-gray-800'>
-                        <IoLocationSharp className='text-[#ff4d2d]' />
-                        Delivery Location
-                    </h2>
-                    <div className='flex gap-2 mb-3'>
-                        <input type='text' placeholder='Enter your delivery address'
-                            className='flex-1 border border-gray-300 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#ff4d2d]'
-                            value={addressInput} onChange={(e) => { setAddressInput(e.target.value) }}
-                        />
-                        <button className='bg-[#ff4d2d] hover:bg-[#e64526] text-white px-3 py-2 rounded-lg flex items-center justify-center cursor-pointer'
-                            onClick={getLatLngByAddress}>
-                            <IoSearchOutline size={17} />
-                        </button>
-                        <button className='bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded-lg flex items-center justify-center cursor-pointer'
-                            onClick={getCurrentLocation}>
-                            <TbCurrentLocation size={17} />
-                        </button>
-                    </div>
-                    {/* Map Placeholder */}
-                    <div className='rounded-xl border overflow-hidden'>
-                        <div className='h-64 w-full flex items-center justify-center'>
-                            {location?.lat && location?.lng && (
-                                <MapContainer className={'w-full h-full'} center={[location?.lat, location?.lng]} zoom={16} >
-                                    <TileLayer
-                                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                                    />
-                                    {/* Helper component to auto-pan when location changes */}
+        <div className="min-h-screen bg-[#fff9f6] flex justify-center px-4 py-8 relative">
 
-                                    <MapViewHandler center={location} />
-                                    <Marker position={[location?.lat, location?.lng]} draggable={true} eventHandlers={{ dragend: onDragEnd }} />
+    {/* Back Button */}
+    <button
+        onClick={() => navigate("/cart")}
+        className="fixed top-6 left-6 z-20 flex items-center justify-center w-10 h-10 rounded-full bg-white shadow hover:shadow-md transition"
+    >
+        <IoIosArrowRoundBack size={28} className="text-[#ff4d2d]" />
+    </button>
 
-                                </MapContainer>
-                            )}
-                        </div>
-                    </div>
-                </section>
+    <div className="w-full max-w-4xl bg-white rounded-3xl shadow-xl p-6 md:p-8 space-y-8">
 
+        {/* Title */}
+        <h1 className="text-2xl md:text-3xl font-extrabold text-gray-800">
+            Checkout
+        </h1>
 
-                {/* Payment Method Section */}
-                <section>
-                    <h2 className='text-lg font-semibold mb-3 text-gray-800'>Payment Method</h2>
-                    <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
-                        <div className={`flex items-center gap-3 rounded-xl border p-4 text-left transition ${paymentMethod === "cod" ? "border-[#ff4d2d] bg-orange-50 shadow" : "border-gray-200 hover:border-gray-300"} cursor-pointer`}
-                            onClick={() => setPaymentMethod("cod")}>
-                            <span className='inline-flex h-10 w-10 items-center justify-center rounded-full bg-green-100'>
-                                <MdDeliveryDining className='text-green-600 text-xl' />
-                            </span>
-                            <div>
-                                <p className='font-medium text-gray-800'> Cash On Delivery </p>
-                                <p className='text-xs text-gray-500'> Pay when your food arrives</p>
-                            </div>
-                        </div>
-                        <div className={`flex items-center gap-3 rounded-xl border p-4 text-left transition ${paymentMethod === "online" ? "border-[#ff4d2d] bg-orange-50 shadow" : "border-gray-200 hover:border-gray-300"} cursor-pointer`}
-                            onClick={() => setPaymentMethod("online")}>
-                            <span className='inline-flex h-10 w-10 items-center justify-center rounded-full bg-purple-100'>
-                                <FaMobileScreenButton className='text-purple-700 text-xl' />
-                            </span>
-                            <span className='inline-flex h-10 w-10 items-center justify-center rounded-full bg-blue-100'>
-                                <FaCreditCard className='text-blue-700 text-xl' />
-                            </span>
-                            <div>
-                                <p className='font-medium text-gray-800'> Online Payment </p>
-                                <p className='text-xs text-gray-500'> Pay securely online</p>
-                            </div>
-                        </div>
-                    </div>
-                </section>
+        {/* ================= LOCATION ================= */}
+        <section className="space-y-4">
+            <h2 className="text-lg font-semibold flex items-center gap-2 text-gray-800">
+                <IoLocationSharp className="text-[#ff4d2d]" />
+                Delivery Location
+            </h2>
 
-                {/* Order Summary Section */}
-                <section>
-                    <h2 className='text-lg font-semibold mb-3 text-gray-800'>Order Summary</h2>
-                    <div className='rounded-xl border bg-gray-50 p-4 space-y-2'>
-                        {cartItems.map((item, idx) => (
-                            <div key={idx} className='flex justify-between text-sm text-gray-700'>
-                                <span>{item.name} x {item.quantity}</span>
-                                <span>₹{item.price * item.quantity}</span>
-                            </div>
-                        ))}
-                        <hr className='border-gray-200 my-2' />
-                        <div className='flex justify-between font-medium text-gray-800'>
-                            <span>
-                                Subtotal
-                            </span>
-                            <span>
-                                {`₹${totalAmount}`}
-                            </span>
-                        </div>
-                        <div className='flex justify-between text-gray-700'>
-                            <span>
-                                Delivery Fee
-                            </span>
-                            <span>
-                                {deliveryFee === 0 ? "Free" : `₹${deliveryFee}`}
-                            </span>
-                        </div>
-                        <div className='flex justify-between text-lg font-bold text-[#ff4d2d] pt-2'>
-                            <span>
-                                Total Amount
-                            </span>
-                            <span>
-                                {`₹${AmountWithDelivery}`}
-                            </span>
-                        </div>
-                    </div>
-                </section>
-                <button className='w-full bg-[#ff4d2d] hover:bg-[#e64526] text-white py-3 rounded-xl font-semibold cursor-pointer'
-                    onClick={handlePlaceOrder}>
-                    {paymentMethod === "cod" ? "Place Order" : "Proceed to Pay"}
+            <div className="flex gap-2">
+                <input
+                    type="text"
+                    placeholder="Enter your delivery address"
+                    className="flex-1 border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#ff4d2d]"
+                    value={addressInput}
+                    onChange={(e) => setAddressInput(e.target.value)}
+                />
+
+                <button
+                    className="bg-[#ff4d2d] hover:bg-[#e64526] text-white px-4 rounded-xl flex items-center justify-center transition"
+                    onClick={getLatLngByAddress}
+                >
+                    <IoSearchOutline size={18} />
+                </button>
+
+                <button
+                    className="bg-blue-500 hover:bg-blue-600 text-white px-4 rounded-xl flex items-center justify-center transition"
+                    onClick={getCurrentLocation}
+                >
+                    <TbCurrentLocation size={18} />
                 </button>
             </div>
 
+            {/* Map */}
+            <div className="rounded-2xl border bg-gray-100 overflow-hidden">
+                <div className="h-64 w-full flex items-center justify-center">
+                    {location?.lat && location?.lng && (
+                        <MapContainer
+                            className="w-full h-full"
+                            center={[location.lat, location.lng]}
+                            zoom={16}
+                        >
+                            <TileLayer
+                                attribution='&copy; OpenStreetMap contributors'
+                                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                            />
+                            <MapViewHandler center={location} />
+                            <Marker
+                                position={[location.lat, location.lng]}
+                                draggable
+                                eventHandlers={{ dragend: onDragEnd }}
+                            />
+                        </MapContainer>
+                    )}
+                </div>
+            </div>
+        </section>
 
-        </div>
+        {/* ================= PAYMENT ================= */}
+        <section className="space-y-4">
+            <h2 className="text-lg font-semibold text-gray-800">
+                Payment Method
+            </h2>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {/* COD */}
+                <div
+                    className={`flex items-center gap-4 rounded-2xl border p-4 cursor-pointer transition
+                    ${paymentMethod === "cod"
+                            ? "border-[#ff4d2d] bg-orange-50 shadow"
+                            : "border-gray-200 hover:border-gray-300"
+                        }`}
+                    onClick={() => setPaymentMethod("cod")}
+                >
+                    <div className="h-12 w-12 rounded-full bg-green-100 flex items-center justify-center">
+                        <MdDeliveryDining className="text-green-600 text-2xl" />
+                    </div>
+                    <div>
+                        <p className="font-semibold text-gray-800">Cash on Delivery</p>
+                        <p className="text-xs text-gray-500">Pay when food arrives</p>
+                    </div>
+                </div>
+
+                {/* Online */}
+                <div
+                    className={`flex items-center gap-4 rounded-2xl border p-4 cursor-pointer transition
+                    ${paymentMethod === "online"
+                            ? "border-[#ff4d2d] bg-orange-50 shadow"
+                            : "border-gray-200 hover:border-gray-300"
+                        }`}
+                    onClick={() => setPaymentMethod("online")}
+                >
+                    <div className="h-12 w-12 rounded-full bg-purple-100 flex items-center justify-center">
+                        <FaMobileScreenButton className="text-purple-700 text-xl" />
+                    </div>
+                    <div className="h-12 w-12 rounded-full bg-blue-100 flex items-center justify-center">
+                        <FaCreditCard className="text-blue-700 text-xl" />
+                    </div>
+                    <div>
+                        <p className="font-semibold text-gray-800">Online Payment</p>
+                        <p className="text-xs text-gray-500">UPI / Card / Wallets</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        {/* ================= SUMMARY ================= */}
+        <section className="space-y-4">
+            <h2 className="text-lg font-semibold text-gray-800">
+                Order Summary
+            </h2>
+
+            <div className="rounded-2xl border bg-gray-50 p-5 space-y-3">
+                {cartItems.map((item, idx) => (
+                    <div key={idx} className="flex justify-between text-sm text-gray-700">
+                        <span>{item.name} × {item.quantity}</span>
+                        <span>₹{item.price * item.quantity}</span>
+                    </div>
+                ))}
+
+                <hr />
+
+                <div className="flex justify-between font-medium text-gray-800">
+                    <span>Subtotal</span>
+                    <span>₹{totalAmount}</span>
+                </div>
+
+                <div className="flex justify-between text-gray-700">
+                    <span>Delivery Fee</span>
+                    <span>{deliveryFee === 0 ? "Free" : `₹${deliveryFee}`}</span>
+                </div>
+
+                <div className="flex justify-between text-xl font-extrabold text-[#ff4d2d] pt-2">
+                    <span>Total</span>
+                    <span>₹{AmountWithDelivery}</span>
+                </div>
+            </div>
+        </section>
+
+        {/* ================= CTA ================= */}
+        <button
+            className="w-full bg-[#ff4d2d] hover:bg-[#e64526] text-white py-4 rounded-2xl text-lg font-bold transition shadow-lg"
+            onClick={handlePlaceOrder}
+        >
+            {paymentMethod === "cod" ? "Place Order" : "Proceed to Pay"}
+        </button>
+
+    </div>
+</div>
+
     )
 }
 

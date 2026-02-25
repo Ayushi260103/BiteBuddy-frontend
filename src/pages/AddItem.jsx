@@ -37,7 +37,7 @@ function AddItem() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
-        if(!name || !price || !category || !foodType || !backendImage){
+        if (!name || !price || !category || !foodType || !backendImage) {
             alert("Please fill all the fields");
             setLoading(false);
             return;
@@ -64,65 +64,137 @@ function AddItem() {
         }
     }
     return (
-        <div className='flex justify-center flex-col items-center p-6 bg-gradient-to-br from-orange-50 relative to-white min-h-screen'>
-            <div className='absolute top-[20px] left-[20px] z-[10] mb-[10px]'
-                onClick={() => navigate("/")} >
-                <IoIosArrowRoundBack size={35} className='text-[#ff4d2d]' />
-            </div>
-            <div className='max-w-lg w-full bg-white shadow-xl rounded-2xl p-8 border border-orange-100'>
-                <div className='flex flex-col items-center mb-6'>
-                    <div className='bg-orange-100 p-4 rounded-full mb-4'><FaUtensils className='text-[#ff4d2d] w-16 h-16' /></div>
-                    <div className='text-3xl font-extrabold text-gray-900'>Add Food Item</div>
+        <div className="relative min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-orange-50 via-white to-orange-50 px-4">
+
+            {/* BACK BUTTON */}
+            <button
+                onClick={() => navigate("/")}
+                className="absolute top-6 left-6 p-2 rounded-full hover:bg-orange-100 transition"
+            >
+                <IoIosArrowRoundBack size={36} className="text-[#ff4d2d]" />
+            </button>
+
+            {/* CARD */}
+            <div className="w-full max-w-lg bg-white shadow-2xl rounded-3xl p-8 border border-orange-100 mt-10">
+
+                {/* HEADER */}
+                <div className="flex flex-col items-center mb-8">
+                    <div className="bg-orange-100 p-4 rounded-full mb-4 shadow-sm">
+                        <FaUtensils className="text-[#ff4d2d] w-14 h-14" />
+                    </div>
+
+                    <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">
+                        Add Food Item
+                    </h1>
+                    <p className="text-sm text-gray-500 mt-1">
+                        Add a delicious item to your menu
+                    </p>
                 </div>
-                <form className='space-y-6' onSubmit={handleSubmit}>
+
+                {/* FORM */}
+                <form className="space-y-6" onSubmit={handleSubmit}>
+
+                    {/* FOOD NAME */}
                     <div>
-                        <label className='block text-sm font-medium text-gray-700 mb-1'>Food Name</label>
-                        <input type="text" placeholder='Enter your food name' className='w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-200'
-                            onChange={(e) => setName(e.target.value)} value={name} />
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Food Name
+                        </label>
+                        <input
+                            type="text"
+                            placeholder="Enter your food name"
+                            className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-200"
+                            onChange={(e) => setName(e.target.value)}
+                            value={name}
+                        />
                     </div>
+
+                    {/* IMAGE */}
                     <div>
-                        <label className='block text-sm font-medium text-gray-700 mb-1'>Food Image</label>
-                        <input type="file" accept="image/*" placeholder='Enter your food Image' className='w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-200'
-                            onChange={handleImage} />
-                        {frontendImage &&
-                            <div className='mt-4'>
-                                <img src={frontendImage} alt="Item" className='w-full h-[200px] object-cover rounded-lg mt-2' onClick={() => ImageRef.current.click()} />
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Food Image
+                        </label>
+
+                        <input
+                            type="file"
+                            accept="image/*"
+                            className="w-full text-sm px-4 py-2 border border-gray-300 rounded-xl cursor-pointer focus:outline-none focus:ring-2 focus:ring-orange-200"
+                            onChange={handleImage}
+                        />
+
+                        {frontendImage && (
+                            <div className="mt-4 relative group">
+                                <img
+                                    src={frontendImage}
+                                    alt="Item"
+                                    className="w-full h-[220px] object-cover rounded-xl border cursor-pointer"
+                                    onClick={() => ImageRef.current.click()}
+                                />
+                                <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition rounded-xl flex items-center justify-center text-white text-sm font-medium">
+                                    Click to change image
+                                </div>
                             </div>
-                        }
+                        )}
                     </div>
+
+                    {/* PRICE */}
                     <div>
-                        <label className='block text-sm font-medium text-gray-700 mb-1'>Price</label>
-                        <input type="number" placeholder='0' className='w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-200'
-                            onChange={(e) => setPrice(e.target.value)} value={price} />
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Price
+                        </label>
+                        <input
+                            type="number"
+                            placeholder="0"
+                            className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-200"
+                            onChange={(e) => setPrice(e.target.value)}
+                            value={price}
+                        />
                     </div>
+
+                    {/* CATEGORY */}
                     <div>
-                        <label className='block text-sm font-medium text-gray-700 mb-1'>Select Category</label>
-                        <select className='w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-200'
-                            onChange={(e) => setCategory(e.target.value)} value={category}>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Select Category
+                        </label>
+                        <select
+                            className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-200"
+                            onChange={(e) => setCategory(e.target.value)}
+                            value={category}
+                        >
                             <option value="">Select a category</option>
-                            {categories.map((cat,index) => (
-                                <option key={index} value={cat}>{cat}</option>
+                            {categories.map((cat, index) => (
+                                <option key={index} value={cat}>
+                                    {cat}
+                                </option>
                             ))}
                         </select>
                     </div>
+
+                    {/* FOOD TYPE */}
                     <div>
-                        <label className='block text-sm font-medium text-gray-700 mb-1'>Select Food Type</label>
-                        <select className='w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-200'
-                            onChange={(e) => setFoodType(e.target.value)} value={foodType}>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Select Food Type
+                        </label>
+                        <select
+                            className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-200"
+                            onChange={(e) => setFoodType(e.target.value)}
+                            value={foodType}
+                        >
                             <option value="">Select a food type</option>
                             <option value="veg">Veg</option>
                             <option value="non-veg">Non-Veg</option>
                         </select>
                     </div>
 
-                    <button className='w-full bg-[#ff4d2d] text-white px-6 py-3 rounded-lg font-semibold shadow-md hover:bg-orange-600 hover:shadow-lg transition-all duration-200 cursor-pointer'>
-                   {loading?
-                    <ClipLoader size={20} color="white"/>:
-                    "Save"}
+                    {/* SUBMIT */}
+                    <button
+                        className="w-full flex items-center justify-center gap-2 bg-[#ff4d2d] text-white px-6 py-3 rounded-xl font-semibold shadow-md hover:bg-orange-600 hover:shadow-lg transition-all duration-200 disabled:opacity-70"
+                    >
+                        {loading ? <ClipLoader size={20} color="white" /> : "Save"}
                     </button>
                 </form>
             </div>
         </div>
+
     )
 }
 

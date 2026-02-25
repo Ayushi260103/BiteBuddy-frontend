@@ -63,7 +63,25 @@ function App() {
 
 
   if (authLoading) {
-    return <div>Loading...</div>;
+    return (
+      <>
+        <div className="w-full min-h-screen flex flex-col items-center justify-center bg-[#fff9f6]">
+
+          {/* Spinner */}
+          <div className="w-14 h-14 rounded-full border-4 border-[#ff4d2d]/30 border-t-[#ff4d2d] animate-spin"></div>
+
+          {/* Text */}
+          <p className="mt-4 text-lg font-semibold text-gray-700">
+            Loading your dashboard
+          </p>
+
+          <p className="text-sm text-gray-400 mt-1">
+            Preparing something delicious 🍔
+          </p>
+
+        </div>
+      </>
+    )
   }
 
   return (

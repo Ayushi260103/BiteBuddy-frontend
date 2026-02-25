@@ -114,7 +114,7 @@ function DeliveryBoyDashboard() {
       const result = await axios.post(`${serverUrl}/api/order/verify-delivery-otp`,
         { orderId, shopOrderId, otp },
         { withCredentials: true });
-        setMessage(result.data.message);
+      setMessage(result.data.message);
       console.log(result.data);
       location.reload() //reload current page
     }
@@ -161,142 +161,189 @@ function DeliveryBoyDashboard() {
   }, [userData]);
 
   return (
-    <div className='w-screen min-h-screen flex flex-col gap-5 items-center bg-[#fff9f6] overflow-y-auto'>
+    <div className="w-screen min-h-screen flex flex-col items-center bg-[#fff9f6] overflow-y-auto">
       <Nav />
-      <div className='w-full max-w-[800px] flex flex-col gap-5 items-center'>
-        <div className='bg-white rounded-2xl shadow-md p-5 flex flex-col justify-start items-center w-[90%] border border-orange-100 text-center gap-2'>
-          <h1 className='text-xl font-bold text-[#ff4d2d]'>
-            Welcome, {userData?.fullName || "Delivery Partner"}
-          </h1>
-          <p className='text-[#ff4d2d]'>
-            <span className='font-semibold'>
-              Latitude:
-            </span>
-            {deliveryBoyLocation?.lat ?? userData?.location?.coordinates?.[1] ?? "N/A"}
 
-            <span className='font-semibold'>
-              , Longitude:
-            </span>
+      <div className="w-full max-w-[800px] flex flex-col gap-6 items-center py-4">
+
+        {/* Welcome Card */}
+        <div className="bg-white rounded-2xl shadow-md p-6 w-[90%] border border-orange-100 text-center space-y-2">
+          <h1 className="text-xl font-bold text-[#ff4d2d] capitalize">
+            👋 Welcome, {userData?.fullName || "Delivery Partner"}
+          </h1>
+          <p className="text-sm text-gray-600">
+            <span className="font-semibold">Latitude:</span>{" "}
+            {deliveryBoyLocation?.lat ?? userData?.location?.coordinates?.[1] ?? "N/A"}
+            <span className="mx-1">|</span>
+            <span className="font-semibold">Longitude:</span>{" "}
             {deliveryBoyLocation?.lon ?? userData?.location?.coordinates?.[0] ?? "N/A"}
           </p>
         </div>
 
         {/* Today Deliveries */}
-        <div className='bg-white rounded-2xl shadow-md p-5 w-[90%] mb-6 border border-orange-100'>
-          <h1 className='text-lg font-bold mb-3 text-[#ff4d2d]'>Today Deliveries</h1>
+        {totalEarning>0 &&
+        <div className="bg-white rounded-2xl shadow-md p-5 w-[90%] border border-orange-100 space-y-6">
+          <h1 className="text-lg font-bold text-[#ff4d2d]">Today Deliveries</h1>
+
           <ResponsiveContainer width="100%" height={200}>
             <BarChart data={todayDeliveries}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="hour" tickFormatter={(h) => `${h}:00`} />
               <YAxis allowDecimals={false} />
-              <Tooltip formatter={(value) => [value, "orders"]} labelFormatter={label => `${label}:00`} />
-              <Bar dataKey="count" fill='#ff4d2d' />
+              <Tooltip
+                formatter={(value) => [value, "orders"]}
+                labelFormatter={(label) => `${label}:00`}
+              />
+              <Bar dataKey="count" fill="#ff4d2d" />
             </BarChart>
           </ResponsiveContainer>
-          <div className='max-w-sm mx-auto mt-6 p-6 bg-white rounded-2xl shadow-lg text-center'>
-            <h1 className='text-xl font-semibold text-gray-800 mb-2'>Today's Earning </h1>
-            <span className='text-3xl font-bold text-green-600'>₹{totalEarning}</span>
+
+          {/* Earnings */}
+          <div className="max-w-sm mx-auto p-6 bg-gradient-to-br from-green-50 to-white rounded-2xl shadow text-center">
+            <h1 className="text-sm font-semibold text-gray-600 mb-1">
+              Today's Earnings
+            </h1>
+            <span className="text-3xl font-bold text-green-600">
+              ₹{totalEarning}
+            </span>
           </div>
         </div>
+        }
 
-        {/* show this div when no current order assigned to delivery boy*/}
-        {!currentOrder &&
-          <div className='bg-white rounded-2xl p-5 shadow-md w-[90%] border border-orange-100'>
-            <h1 className='text-lg font-bold mb-4 flex items-center gap-2'>
+        {/* No Current Order */}
+        {!currentOrder && (
+          <div className="bg-white rounded-2xl p-5 shadow-md w-[90%] border border-orange-100">
+            <h1 className="text-lg font-bold mb-4">
               Available Order Assignments
             </h1>
-            <div className='space-y-4'>
+
+            <div className="space-y-4">
               {availableAssignments.length > 0 ? (
                 availableAssignments.map((a, idx) => (
-
-                  <div className='border rounded-lg p-4 flex justify-between items-center' key={idx}>
+                  <div
+                    key={idx}
+                    className="border rounded-xl p-4 flex justify-between items-center hover:shadow-sm transition"
+                  >
                     <div>
-                      <p className='text-sm font-semibold'>
-                        {a?.shopName}
-                      </p>
-                      <p className='text-sm text-gray-500'>
-                        <span className='font-semibold pr-1'>
-                          Deliver At:
-                        </span>
+                      <p className="text-sm font-semibold">{a?.shopName}</p>
+                      <p className="text-sm text-gray-500">
+                        <span className="font-semibold">Deliver At:</span>{" "}
                         {a?.deliveryAddress?.text}
                       </p>
-                      <p className='text-sm text-gray-400'>
-                        {a?.items?.length} {a?.items?.length > 1 ? "items" : "item"} | {a?.subtotal}
+                      <p className="text-xs text-gray-400">
+                        {(a?.items || [])
+                          .map((item) => `${item?.name || item?.item?.name} x ${item?.quantity}`)
+                          .join(", ")}{" "}
+                        | {a?.subtotal}
                       </p>
                     </div>
-                    <button className='bg-orange-500 text-white px-4 py-1 rounded-lg text-sm hover:bg-orange-600 cursor-pointer'
-                      onClick={() => handleAcceptOrder(a?.assignmentId)}>
+
+                    <button
+                      className="bg-orange-500 text-white px-4 py-1.5 rounded-lg text-sm font-medium hover:bg-orange-600 active:scale-95 transition"
+                      onClick={() => handleAcceptOrder(a?.assignmentId)}
+                    >
                       Accept
                     </button>
                   </div>
                 ))
-              ) :
-                <p className='text-gray-400 text-sm'>
+              ) : (
+                <p className="text-gray-400 text-sm text-center">
                   No Assignments available
                 </p>
-              }
+              )}
             </div>
           </div>
-        }
-        {currentOrder &&
-          <div className='bg-white rounded-2xl p-5 shadow-md w-[90%] border border-orange-100'>
-            <h2 className='text-lg font-bold mb-3'>
-              📦Current Assigned Order
+        )}
+
+        {/* Current Assigned Order */}
+        {currentOrder && (
+          <div className="bg-white rounded-2xl p-5 shadow-md w-[90%] border border-orange-100">
+            <h2 className="text-lg font-bold mb-3 flex items-center gap-2">
+              📦 Current Assigned Order
             </h2>
-            <div className='border rounded-lg p-4 mb-3'>
-              <p className='font-semibold text-sm'>
+
+            <div className="border rounded-xl p-4 mb-4 bg-[#fffaf7]">
+              <p className="font-semibold text-sm">
                 {currentOrder?.shopOrder?.shop?.name}
               </p>
-              <p className='text-sm text-gray-500'>
+              <p className="text-sm text-gray-500">
                 {currentOrder?.deliveryAddress.text}
               </p>
-              <p className='text-xs text-gray-400'>
-                {currentOrder.shopOrder?.shopOrderItems?.length} {currentOrder.shopOrder?.shopOrderItems?.length > 1 ? "items" : "item"} | {currentOrder.shopOrder?.subtotal}
+              <p className="text-xs text-gray-400">
+                {(currentOrder?.shopOrder?.shopOrderItems || [])
+                  .map((item) => `${item?.name || item?.item?.name} x ${item?.quantity}`)
+                  .join(", ")}{" "}
+                |{" "}
+                {currentOrder.shopOrder?.subtotal}
               </p>
             </div>
-            <DeliveryBoyTracking data={{
-              deliveryBoyLocation: deliveryBoyLocation ||
-              {
-                lat: userData.location.coordinates[1],
-                lon: userData.location.coordinates[0]
-              },
-              customerLocation:
-              {
-                lat: currentOrder.deliveryAddress.latitude,
-                lon: currentOrder.deliveryAddress.longitude
-              }
-            }} />
-            {!showOtpBox &&
-              <button className='mt-4 w-full bg-green-500 text-white font-semibold py-2 px-4 rounded-xl shadow-md
-            hover:bg-green-600 active:scale-95 transition-all duration-200'
+
+            {/* Map (untouched functionality) */}
+            <div className="h-[350px] w-full rounded-2xl overflow-hidden shadow-md border">
+              <DeliveryBoyTracking
+                data={{
+                  deliveryBoyLocation:
+                    deliveryBoyLocation || {
+                      lat: userData.location.coordinates[1],
+                      lon: userData.location.coordinates[0],
+                    },
+                  customerLocation: {
+                    lat: currentOrder.deliveryAddress.latitude,
+                    lon: currentOrder.deliveryAddress.longitude,
+                  },
+                }}
+              />
+            </div>
+
+            {!showOtpBox && (
+              <button
+                className="mt-4 w-full bg-green-500 text-white font-semibold py-3 rounded-xl shadow-md
+            hover:bg-green-600 active:scale-95 transition-all duration-200 disabled:opacity-70"
                 onClick={handleSendDeliveryOtp}
-                disabled={loading}>
-                {loading? <ClipLoader size={20} color='white'/>:"Mark as Delivered"}
+                disabled={loading}
+              >
+                {loading ? <ClipLoader size={20} color="white" /> : "Mark as Delivered"}
               </button>
-            }
-            {showOtpBox &&
-              <div className='mt-4 p-4 border rounded-xl bg-gray-50'>
-                <p className='text-sm font-semibold mb-2'>
-                  Enter OTP send to
-                  <span className="text-orange-500 pl-1">
+            )}
+
+            {showOtpBox && (
+              <div className="mt-4 p-4 border rounded-xl bg-gray-50 space-y-3">
+                <p className="text-sm font-semibold">
+                  Enter OTP sent to{" "}
+                  <span className="text-orange-500">
                     {currentOrder?.user?.fullName
                       ?.toLowerCase()
                       ?.replace(/\b\w/g, (char) => char.toUpperCase())}
                   </span>
                 </p>
-                <input type="text" className='w-full border px-3 py-2 rounded-lg mb-3 focus:outline-none focus:ring-2 focus:ring-orange-400' placeholder='Enter OTP'
-                  onChange={(e) => setOtp(e.target.value)} value={otp} />
-                  {message && <p className='text-center text-green-400'>{message}</p>}
-                <button className='w-full bg-orange-500 text-white py-2 rounded-lg font-semibold hover:bg-orange-600 transition-all'
-                  onClick={handleVerifyDeliveryOtp}>
+
+                <input
+                  type="text"
+                  className="w-full border px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400"
+                  placeholder="Enter OTP"
+                  onChange={(e) => setOtp(e.target.value)}
+                  value={otp}
+                />
+
+                {message && (
+                  <p className="text-center text-green-500 font-medium">
+                    {message}
+                  </p>
+                )}
+
+                <button
+                  className="w-full bg-orange-500 text-white py-2 rounded-lg font-semibold hover:bg-orange-600 transition"
+                  onClick={handleVerifyDeliveryOtp}
+                >
                   Submit OTP
                 </button>
               </div>
-            }
+            )}
           </div>
-        }
+        )}
       </div>
     </div>
+
   )
 }
 export default DeliveryBoyDashboard

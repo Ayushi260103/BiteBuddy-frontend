@@ -18,10 +18,10 @@ function FoodCard({ data }) {
         const stars = [];
         for (let i = 1; i <= 5; i++) {
             if (i <= Math.floor(rating)) {
-                stars.push(<FaStar key={i} className='text-yellow-500 text-lg'/>);
+                stars.push(<FaStar key={i} className='text-yellow-500 text-lg' />);
             }
             else {
-                stars.push(<FaRegStar key={i} className='text-yellow-500 text-lg'/>);
+                stars.push(<FaRegStar key={i} className='text-yellow-500 text-lg' />);
             }
         }
         return stars;
@@ -54,30 +54,29 @@ function FoodCard({ data }) {
     }
 
     return (
-        <div className='w-[250px] rounded-2xl border-2 border-[#ff4d2d] 
-    bg-white shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col'>
-            <div className='relative w-full h-[170px] flex justify-center items-center bg-white'>
+        <div className="w-[260px] rounded-3xl bg-white shadow-md hover:shadow-2xl transition-all duration-300 flex flex-col overflow-hidden">
+            <div className="relative w-full h-[180px] bg-gray-100 overflow-hidden">
                 <div className='absolute top-3 right-3 bg-white rounded-full p-1 shadow'>
                     {data.foodType === "veg" ? <FaLeaf className='text-green-500 text-l' /> : <FaDrumstickBite className='text-red-500 text-l' />}
                 </div>
                 <img src={data.image} alt={data.name} className='w-full h-full object-cover transition-transform duration-300 hover:scale-105' />
             </div>
 
-            <div className='flex-1 flex flex-col p-4'>
-                <h1 className='font-semibold text-gray-900 text-base truncate'>{data.name}</h1>
-                <div className='flex items-center gap-1 mt-1'>
+            <div className="flex flex-col p-4 gap-1">
+                <h1 className='"font-semibold text-gray-900 text-base line-clamp-1 truncate'>{data.name}</h1>
+                <div className="flex items-center gap-1 text-xs text-gray-500">
                     {renderStarts(data.rating?.average || 0)}
                     <span className='text-xs text-gray-500'>
-                    {data.rating?.count ||0} {data.rating?.count === 1 ? "rating" : "ratings"}
+                        {data.rating?.count || 0} {data.rating?.count === 1 ? "rating" : "ratings"}
                     </span>
                 </div>
             </div>
 
-            <div className='flex items-center justify-between mt-auto p-3'>
-                <span className='font-bold text-gray-900 text-lg'>
-                     ₹{data.price}
+            <div className="flex items-center justify-between px-4 pb-4 mt-auto">
+                <span className="text-lg font-bold text-gray-900">
+                    ₹{data.price}
                 </span>
-                <div className='flex items-center border rounded-full overflow-hidden shadow-sm'>
+                <div className="flex items-center bg-gray-100 rounded-full p-1 gap-1">
                     <button className='px-2 py-1 hover:bg-gray-100 transition cursor-pointer' onClick={handleDecrease}>
                         <FaMinus size={12} />
                     </button>
@@ -85,8 +84,8 @@ function FoodCard({ data }) {
                     <button className='px-2 py-1 hover:bg-gray-100 transition cursor-pointer' onClick={handleIncrease}>
                         <FaPlus size={12} />
                     </button>
-                    <button className={`  ${cartItems.some(item => item.id === data._id) ? "bg-gray-800" : "bg-[#ff4d2d]"} text-white px-3 py-1 rounded-full ml-2 hover:bg-[#e6441c] transition cursor-pointer`}
-                    onClick={handleAddToCart}>
+                    <button className={`  ${cartItems.some(item => item.id === data._id) ? "bg-gray-800" : "bg-[#ff4d2d]"} text-white p-2 rounded-full hover:scale-105 transition cursor-pointer`}
+                        onClick={handleAddToCart}>
                         <FaShoppingCart />
                     </button>
                 </div>
