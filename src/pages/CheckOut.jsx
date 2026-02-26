@@ -41,16 +41,38 @@ function MapViewHandler({ center }) {
 }
 
 function CheckOut() {
-    const { userData } = useSelector(state => state.user);
-    const { cartItems, totalAmount } = useSelector(state => state.user);
+    const { userData, cartItems, totalAmount, currentCity } = useSelector(state => state.user);
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const [addressInput, setAddressInput] = React.useState("");
     const { location, address } = useSelector(state => state.map);
     const [paymentMethod, setPaymentMethod] = React.useState("cod");
+    const [deliveryCity, setDeliveryCity] = React.useState("");
+    const [cityMismatchError, setCityMismatchError] = React.useState("");
 
     const deliveryFee = totalAmount < 500 ? 40 : 0; // Flat delivery fee of ₹20 for orders below ₹500
     const AmountWithDelivery = totalAmount + deliveryFee;
+
+    const extractCityFromGeoResult = (geoResult) => {
+        return geoResult?.city || geoResult?.town || geoResult?.village || geoResult?.county || "";
+    };
+
+    const getNormalizedShopCities = () => {
+        const cartShopCities = (cartItems || [])
+            .map(item => item?.shop?.city)
+            .filter(Boolean)
+            .map(city => city.trim().toLowerCase());
+
+        if (cartShopCities.length > 0) {
+            return [...new Set(cartShopCities)];
+        }
+
+        if (currentCity?.trim()) {
+            return [currentCity.trim().toLowerCase()];
+        }
+
+        return [];
+    };
 
     const onDragEnd = (event) => {
         console.log("Marker dragged to: ", event.target._latlng);
@@ -63,7 +85,10 @@ function CheckOut() {
         try {
             const result = await axios.get(`https://api.geoapify.com/v1/geocode/reverse?lat=${lat}&lon=${lng}&format=json&apiKey=${import.meta.env.VITE_GEOAPIKEY}`);
             const address = (result?.data?.results[0]?.address_line2 || result?.data?.results[0]?.address_line1);
+            const selectedCity = extractCityFromGeoResult(result?.data?.results[0]);
             dispatch(setAddress(address));
+            setDeliveryCity(selectedCity);
+            setCityMismatchError("");
             console.log("dragged address", address);
         }
         catch (err) {
@@ -89,7 +114,11 @@ function CheckOut() {
                 return;
             }
             console.log("geocoding result", result?.data);
-            dispatch(setLocation({ lat: result?.data?.results[0]?.lat, lng: result?.data?.results[0]?.lon }));
+            const firstResult = result?.data?.results[0];
+            dispatch(setLocation({ lat: firstResult?.lat, lng: firstResult?.lon }));
+            dispatch(setAddress(firstResult?.address_line2 || firstResult?.address_line1 || addressInput));
+            setDeliveryCity(extractCityFromGeoResult(firstResult));
+            setCityMismatchError("");
 
         } catch (err) {
             console.error("Error fetching geocoding data: ", err);
@@ -99,6 +128,30 @@ function CheckOut() {
     useEffect(() => {
         setAddressInput(address);
     }, [address])
+
+    const validateDeliveryCityMatchesShopCity = () => {
+        const normalizedDeliveryCity = deliveryCity?.trim().toLowerCase();
+        const shopCities = getNormalizedShopCities();
+
+        if (!normalizedDeliveryCity) {
+            setCityMismatchError("Please select a valid delivery address with city before placing the order.");
+            return false;
+        }
+
+        if (shopCities.length === 0) {
+            return true;
+        }
+
+        const isMatched = shopCities.includes(normalizedDeliveryCity);
+        if (!isMatched) {
+            const shopCityLabel = shopCities.map(city => city[0].toUpperCase() + city.slice(1)).join(", ");
+            setCityMismatchError(`Delivery city does not match shop city. Please select an address in ${shopCityLabel}.`);
+            return false;
+        }
+
+        setCityMismatchError("");
+        return true;
+    };
 
     const openRazorpayWindow = (orderId, razorpayOrder) => {
         const options = {
@@ -127,6 +180,10 @@ function CheckOut() {
         rzp.open();
     }
     const handlePlaceOrder = async () => {
+        if (!validateDeliveryCityMatchesShopCity()) {
+            return;
+        }
+
         try {
             const result = await axios.post(`${serverUrl}/api/order/place-order`, {
                 paymentMethod,
@@ -205,6 +262,9 @@ function CheckOut() {
                     <TbCurrentLocation size={18} />
                 </button>
             </div>
+            {cityMismatchError && (
+                <p className="text-sm text-red-600">{cityMismatchError}</p>
+            )}
 
             {/* Map */}
             <div className="rounded-2xl border bg-gray-100 overflow-hidden">
