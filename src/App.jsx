@@ -32,7 +32,7 @@ import { setSocket } from './redux/userSlice'
 export const serverUrl =
   import.meta.env.MODE === "development"
     ? "http://localhost:8000"
-    : "https://your-render-backend.onrender.com";
+    : "https://bitebuddy-backend-mzhh.onrender.com";
 
 function App() {
   useGetCurrentUser(); // Call the hook to fetch current user data
