@@ -29,7 +29,10 @@ import { setSocket } from './redux/userSlice'
 
 //backend url
 // export const serverUrl = "http://localhost:8000";        
-export const serverUrl = "https://bitebuddy-backend-mzhh.onrender.com";    
+export const serverUrl =
+  import.meta.env.MODE === "development"
+    ? "http://localhost:8000"
+    : "https://your-render-backend.onrender.com";
 
 function App() {
   useGetCurrentUser(); // Call the hook to fetch current user data
@@ -45,18 +48,18 @@ function App() {
 
 
   useEffect(() => {
-    
+
     //connect 
     const socketInstance = io(serverUrl, { withCredentials: true });
     dispatch(setSocket(socketInstance));
 
-    socketInstance.on('connect',()=>{
-      if(userData){                                                    //emit sends an event to backend, on access an event
-        socketInstance.emit('identity', {userId:userData._id});       //emit krenge ek event, "identity" event name is given by us so we need to use this exact name at backend
+    socketInstance.on('connect', () => {
+      if (userData) {                                                    //emit sends an event to backend, on access an event
+        socketInstance.emit('identity', { userId: userData._id });       //emit krenge ek event, "identity" event name is given by us so we need to use this exact name at backend
       }                                                              //will send user id
       console.log(socketInstance.id);
     })
-    return () =>{
+    return () => {
       socketInstance.disconnect();
     }
   }, [userData?._id]);

@@ -89,40 +89,66 @@ function DeliveryBoyDashboard() {
 
   const handleSendDeliveryOtp = async () => {
     setLoading(true);
+
     try {
-      const orderId = currentOrder._id;
-      const shopOrderId = currentOrder.shopOrder._id;
-      const result = await axios.post(`${serverUrl}/api/order/send-delivery-otp`,
+      const orderId = currentOrder?._id;
+      const shopOrderId = currentOrder?.shopOrder?._id;
+
+      if (!orderId || !shopOrderId) {
+        setLoading(false);   // ✅ IMPORTANT
+        return;
+      }
+console.log("SERVER URL:", serverUrl);
+
+      const result = await axios.post(
+        `${serverUrl}/api/order/send-delivery-otp`,
         { orderId, shopOrderId },
-        { withCredentials: true });
-      setLoading(false);
-      setShowOtpBox(true)
+        { withCredentials: true, timeout: 10000,  }
+      );
+
+      if (result.data.mailSent) {
+        setShowOtpBox(true);
+      }
+
       console.log(result.data);
-    }
-    catch (err) {
-      setLoading(false);
-      setShowOtpBox(false);
+    } catch (err) {
       console.log(err.response?.data);
+      setShowOtpBox(false);
+    } finally {
+      setLoading(false);
     }
-  }
+  };
+
 
   const handleVerifyDeliveryOtp = async () => {
+    setLoading(true);
     setMessage("");
+
     try {
-      const orderId = currentOrder._id;
-      const shopOrderId = currentOrder.shopOrder._id;
-      const result = await axios.post(`${serverUrl}/api/order/verify-delivery-otp`,
+      const orderId = currentOrder?._id;
+      const shopOrderId = currentOrder?.shopOrder?._id;
+
+      if (!orderId || !shopOrderId || !otp) {
+        setLoading(false);   // ✅ IMPORTANT
+        return;
+      }
+
+      const result = await axios.post(
+        `${serverUrl}/api/order/verify-delivery-otp`,
         { orderId, shopOrderId, otp },
-        { withCredentials: true });
+        { withCredentials: true }
+      );
+
       setMessage(result.data.message);
-      console.log(result.data);
-      location.reload() //reload current page
-    }
-    catch (err) {
-      setMessage("")
+      location.reload();
+    } catch (err) {
       console.log(err.response?.data);
+    } finally {
+      setLoading(false);
     }
-  }
+  };
+
+
 
   const handleTodayDeliveries = async () => {
     try {
@@ -181,33 +207,33 @@ function DeliveryBoyDashboard() {
         </div>
 
         {/* Today Deliveries */}
-        {totalEarning>0 &&
-        <div className="bg-white rounded-2xl shadow-md p-5 w-[90%] border border-orange-100 space-y-6">
-          <h1 className="text-lg font-bold text-[#ff4d2d]">Today Deliveries</h1>
+        {totalEarning > 0 &&
+          <div className="bg-white rounded-2xl shadow-md p-5 w-[90%] border border-orange-100 space-y-6">
+            <h1 className="text-lg font-bold text-[#ff4d2d]">Today Deliveries</h1>
 
-          <ResponsiveContainer width="100%" height={200}>
-            <BarChart data={todayDeliveries}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="hour" tickFormatter={(h) => `${h}:00`} />
-              <YAxis allowDecimals={false} />
-              <Tooltip
-                formatter={(value) => [value, "orders"]}
-                labelFormatter={(label) => `${label}:00`}
-              />
-              <Bar dataKey="count" fill="#ff4d2d" />
-            </BarChart>
-          </ResponsiveContainer>
+            <ResponsiveContainer width="100%" height={200}>
+              <BarChart data={todayDeliveries}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="hour" tickFormatter={(h) => `${h}:00`} />
+                <YAxis allowDecimals={false} />
+                <Tooltip
+                  formatter={(value) => [value, "orders"]}
+                  labelFormatter={(label) => `${label}:00`}
+                />
+                <Bar dataKey="count" fill="#ff4d2d" />
+              </BarChart>
+            </ResponsiveContainer>
 
-          {/* Earnings */}
-          <div className="max-w-sm mx-auto p-6 bg-gradient-to-br from-green-50 to-white rounded-2xl shadow text-center">
-            <h1 className="text-sm font-semibold text-gray-600 mb-1">
-              Today's Earnings
-            </h1>
-            <span className="text-3xl font-bold text-green-600">
-              ₹{totalEarning}
-            </span>
+            {/* Earnings */}
+            <div className="max-w-sm mx-auto p-6 bg-gradient-to-br from-green-50 to-white rounded-2xl shadow text-center">
+              <h1 className="text-sm font-semibold text-gray-600 mb-1">
+                Today's Earnings
+              </h1>
+              <span className="text-3xl font-bold text-green-600">
+                ₹{totalEarning}
+              </span>
+            </div>
           </div>
-        </div>
         }
 
         {/* No Current Order */}
