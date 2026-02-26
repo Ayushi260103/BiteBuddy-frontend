@@ -142,7 +142,7 @@ function Nav() {
                             >
                                 <FiShoppingCart size={24} className="text-[#ff4d2d]" />
                                 <span className="absolute -right-2 -top-2 text-xs font-semibold text-[#ff4d2d]">
-                                    {cartItems.length}
+                                    {(cartItems || []).length}
                                 </span>
                             </div>
 

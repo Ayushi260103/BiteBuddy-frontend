@@ -50,6 +50,9 @@ const userSlice = createSlice({
         },
         addToCart: (state, action) => {
             const newCartItem = action.payload;
+            if (!Array.isArray(state.cartItems)) {
+                state.cartItems = [];
+            }
             const existing = state.cartItems.find(item => item.id === newCartItem.id);
             if (existing) {
                 existing.quantity += newCartItem.quantity;
@@ -62,6 +65,9 @@ const userSlice = createSlice({
         },
         updateQuantity: (state, action) => {
             const { id, quantity } = action.payload;
+            if (!Array.isArray(state.cartItems)) {
+                state.cartItems = [];
+            }
             const item = state.cartItems.find(item => item.id === id);
             if (item) {
                 item.quantity = quantity;
@@ -70,8 +76,15 @@ const userSlice = createSlice({
         },
         removeCartItem: (state, action) => {
             const id = action.payload;
+            if (!Array.isArray(state.cartItems)) {
+                state.cartItems = [];
+            }
             state.cartItems = state.cartItems.filter(item => item.id !== id);
             state.totalAmount = state.cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
+        },
+        clearCart: (state) => {
+            state.cartItems = null;
+            state.totalAmount = 0;
         },
         setMyOrders: (state, action) => {
             state.myOrders = Array.isArray(action.payload) ? action.payload : [];
@@ -133,7 +146,7 @@ const userSlice = createSlice({
 export const { setUserData, setCurrentCity, setLoading,
     setCurrentState, setCurrentAddress, setShopsInMyCity,
     setItemsInMyCity, addToCart, updateQuantity, removeCartItem,
-    setMyOrders, addNewOrderToMyOrders, updateOrderStatus, setSearchItems,
+    clearCart, setMyOrders, addNewOrderToMyOrders, updateOrderStatus, setSearchItems,
     setSocket, updateRealTimeOrderStatus, updateAssignedDeliveryBoy
 } = userSlice.actions;
 

@@ -84,7 +84,7 @@ function FoodCard({ data }) {
                     <button className='px-2 py-1 hover:bg-gray-100 transition cursor-pointer' onClick={handleIncrease}>
                         <FaPlus size={12} />
                     </button>
-                    <button className={`  ${cartItems.some(item => item.id === data._id) ? "bg-gray-800" : "bg-[#ff4d2d]"} text-white p-2 rounded-full hover:scale-105 transition cursor-pointer`}
+                    <button className={`  ${(cartItems || []).some(item => item.id === data._id) ? "bg-gray-800" : "bg-[#ff4d2d]"} text-white p-2 rounded-full hover:scale-105 transition cursor-pointer`}
                         onClick={handleAddToCart}>
                         <FaShoppingCart />
                     </button>

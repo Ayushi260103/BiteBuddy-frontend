@@ -27,7 +27,7 @@ function CartPage() {
                 </div>
 
                 {/* Empty Cart */}
-                {cartItems?.length === 0 ? (
+                {(cartItems || []).length === 0 ? (
                     <div className="bg-white rounded-2xl shadow-md p-10 text-center">
                         <p className="text-gray-500 text-lg mb-4">
                             Your cart is empty 🍽️
@@ -43,7 +43,7 @@ function CartPage() {
                     <>
                         {/* Cart Items */}
                         <div className="space-y-5">
-                            {cartItems.map((item, idx) => (
+                            {(cartItems || []).map((item, idx) => (
                                 <CartItemCard key={idx} data={item} />
                             ))}
                         </div>

@@ -18,7 +18,7 @@ import { FaMobileScreenButton } from 'react-icons/fa6';
 import { FaCreditCard } from 'react-icons/fa';
 import { MdDeliveryDining } from 'react-icons/md';
 import { serverUrl } from '../App';
-import { addNewOrderToMyOrders } from '../redux/userSlice';
+import { addNewOrderToMyOrders, clearCart } from '../redux/userSlice';
 import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
 import markerIcon from "leaflet/dist/images/marker-icon.png";
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
@@ -115,6 +115,7 @@ function CheckOut() {
                         orderId
                     }, { withCredentials: true });
                     dispatch(addNewOrderToMyOrders(result.data));
+                    dispatch(clearCart());
                     navigate("/order-placed");
                 }
                 catch (error) {
@@ -141,6 +142,7 @@ function CheckOut() {
 
             if (paymentMethod == 'cod') {
                 dispatch(addNewOrderToMyOrders(result.data));
+                dispatch(clearCart());
                 navigate("/order-placed");
             }
             else {
@@ -284,7 +286,7 @@ function CheckOut() {
             </h2>
 
             <div className="rounded-2xl border bg-gray-50 p-5 space-y-3">
-                {cartItems.map((item, idx) => (
+                {(cartItems || []).map((item, idx) => (
                     <div key={idx} className="flex justify-between text-sm text-gray-700">
                         <span>{item.name} × {item.quantity}</span>
                         <span>₹{item.price * item.quantity}</span>
