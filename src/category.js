@@ -9,6 +9,7 @@ import image8 from './assets/image8.avif';
 import image9 from './assets/image9.jpg';
 import image10 from './assets/image10.avif';
 import image11 from './assets/image11.jpg';
+import image12 from './assets/image12.jpg';
 
 
 export const categories = [
@@ -22,5 +23,6 @@ export const categories = [
     {"category":"North Indian", "image":image8},
     {"category":"Chinese", "image":image9},
     {"category":"Fast Food", "image":image10},
+    {"category":"Beverages", "image":image12},
     {"category":"All", "image":image11}
 ]
